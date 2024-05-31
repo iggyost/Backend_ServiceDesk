@@ -34,4 +34,6 @@ public partial class ReportsView
     public DateTime? LastChangeDate { get; set; }
 
     public TimeSpan? LastChangeTime { get; set; }
+
+    public bool? IsReady { get; set; }
 }

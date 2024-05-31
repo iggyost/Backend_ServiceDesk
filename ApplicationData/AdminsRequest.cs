@@ -19,7 +19,11 @@ public partial class AdminsRequest
 
     public TimeSpan? LastChangeTime { get; set; }
 
+    public bool? IsReady { get; set; }
+
     public virtual Admin Admin { get; set; } = null!;
+
+    public virtual ICollection<Progress> Progresses { get; set; } = new List<Progress>();
 
     public virtual Request Request { get; set; } = null!;
 }

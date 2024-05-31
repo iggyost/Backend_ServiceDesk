@@ -31,6 +31,8 @@ public partial class ServiceDeskDbContext : DbContext
 
     public virtual DbSet<MessagesView> MessagesViews { get; set; }
 
+    public virtual DbSet<Progress> Progresses { get; set; }
+
     public virtual DbSet<ReportsView> ReportsViews { get; set; }
 
     public virtual DbSet<Request> Requests { get; set; }
@@ -70,6 +72,7 @@ public partial class ServiceDeskDbContext : DbContext
                 .HasPrecision(0)
                 .HasColumnName("accepted_time");
             entity.Property(e => e.AdminId).HasColumnName("admin_id");
+            entity.Property(e => e.IsReady).HasColumnName("isReady");
             entity.Property(e => e.LastChangeDate)
                 .HasColumnType("date")
                 .HasColumnName("last_change_date");
@@ -191,6 +194,23 @@ public partial class ServiceDeskDbContext : DbContext
             entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
+        modelBuilder.Entity<Progress>(entity =>
+        {
+            entity.ToTable("Progress");
+
+            entity.Property(e => e.ProgressId).HasColumnName("progress_id");
+            entity.Property(e => e.AdminId).HasColumnName("admin_id");
+            entity.Property(e => e.AdminRequestId).HasColumnName("admin_request_id");
+            entity.Property(e => e.Title)
+                .HasMaxLength(100)
+                .HasColumnName("title");
+
+            entity.HasOne(d => d.AdminRequest).WithMany(p => p.Progresses)
+                .HasForeignKey(d => d.AdminRequestId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Progress_AdminsRequests");
+        });
+
         modelBuilder.Entity<ReportsView>(entity =>
         {
             entity
@@ -214,6 +234,7 @@ public partial class ServiceDeskDbContext : DbContext
             entity.Property(e => e.Description)
                 .HasMaxLength(500)
                 .HasColumnName("description");
+            entity.Property(e => e.IsReady).HasColumnName("isReady");
             entity.Property(e => e.LastChangeDate)
                 .HasColumnType("date")
                 .HasColumnName("last_change_date");

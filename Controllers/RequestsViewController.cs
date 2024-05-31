@@ -15,8 +15,47 @@ namespace Backend_ServiceDesk.Controllers
         {
             try
             {
-                var data = context.RequestsViews.Where(x => x.StatusId != 3).ToList();
+                var data = context.RequestsViews.Where(x => x.StatusId == 1).ToList();
                 return Ok(data);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера");
+            }
+        }
+        [HttpGet]
+        [Route("get/user/{userId}")]
+        public ActionResult<IEnumerable<RequestsView>> GetUser(int userId)
+        {
+            try
+            {
+                var data = context.RequestsViews.Where(x => x.UserId == userId).ToList();
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера");
+            }
+        }
+        [HttpGet]
+        [Route("send/{name}/{description}/{categoryId}/{userId}")]
+        public ActionResult<IEnumerable<Request>> Send(string name, string description, int categoryId, int userId)
+        {
+            try
+            {
+                Request request = new Request()
+                {
+                    Name = name,
+                    Description = description,
+                    CategoryId = categoryId,
+                    Date = DateTime.Now,
+                    Time = DateTime.Now.TimeOfDay,
+                    StatusId = 1,
+                    UserId = userId
+                };
+                context.Requests.Add(request);
+                context.SaveChanges();
+                return Ok();
             }
             catch (Exception)
             {
