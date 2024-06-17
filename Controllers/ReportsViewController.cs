@@ -69,6 +69,36 @@ namespace Backend_ServiceDesk.Controllers
             }
         }
         [HttpGet]
+        [Route("set/ready/{adminId}/{requestId}")]
+        public ActionResult<IEnumerable<int>> SetReady(int adminId, int requestId)
+        {
+            try
+            {
+                AdminsRequest adminsRequest = new AdminsRequest()
+                {
+                    AdminId = adminId,
+                    RequestId = requestId,
+                    AcceptedDate = DateTime.Now,
+                    AcceptedTime = DateTime.Now.TimeOfDay,
+                    LastChangeDate = DateTime.Now,
+                    LastChangeTime = DateTime.Now.TimeOfDay,
+                    IsReady = false,
+                };
+                context.AdminsRequests.Add(adminsRequest);
+                context.SaveChanges();
+                var currentRequest = context.Requests.Where(x => x.RequestId == requestId).FirstOrDefault();
+                currentRequest.StatusId = 3;
+                context.Requests.Attach(currentRequest);
+                context.Entry(currentRequest).Property(x => x.StatusId).IsModified = true;
+                context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сервера");
+            }
+        }
+        [HttpGet]
         [Route("get/admin/{adminId}")]
         public ActionResult<IEnumerable<ReportsView>> GetAdminRequests(int adminId)
         {
